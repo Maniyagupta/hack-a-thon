@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>AI Scheduling Assistant</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 500;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+
+        .features {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .feature-box {
+            background-color: white;
+            padding: 20px;
+            width: 30%;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .features {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .feature-box {
+                width: 100%;
+            }
+        }
+
+        /* Voice interaction styles */
+        .voice-control {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #mic {
+            width: 60px;
+            height: 60px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+            position: relative;
+        }
+
+        #mic::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 36px;
+            background-color: white;
+            transform: translate(-50%, -50%);
+            border-radius: 5px;
+        }
+
+        #mic::after {
+            content: '';
+            position: absolute;
+            top: 75%;
+            left: 50%;
+            width: 12px;
+            height: 4px;
+            background-color: white;
+            transform: translate(-50%, 0%);
+        }
+
+        /* Form styles */
+        .form-section {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-group input[type="date"], .form-group input[type="time"] {
+            width: 30%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AI Scheduling Assistant</h1>
+        <p>Your smart assistant for seamless scheduling</p>
+    </header>
+
+    <div class="container">
+        <section id="hero">
+            <h2>Plan Your Meetings Effortlessly</h2>
+            <p>Use the power of AI to automate and optimize your scheduling process. Schedule, reschedule, and manage your calendar all in one place.</p>
+            <a href="hackathon3.html" class="btn">Get Started</a>
+        </section>
+
+        <section id="features">
+            <h2>Features</h2>
+            <div class="features">
+                <div class="feature-box">
+                    <h3>Smart Scheduling</h3>
+                    <p>Automatically find the best time for meetings based on your availability and preferences.</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Natural Language Processing</h3>
+                    <p>Use simple commands like "Schedule a meeting tomorrow" to set up events instantly.</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Voice Commands</h3>
+                    <p>Talk to your assistant and schedule meetings effortlessly using your voice.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works">
+            <h2>How It Works</h2>
+            <p>Log in with your calendar, and the AI Scheduling Assistant will help you find the best times for meetings based on your availability, preferences, and existing appointments. You can even reschedule meetings with a single voice command!</p>
+        </section>
+
+        <!-- Voice Interaction Section -->
+        <section id="voice-control" class="voice-control">
+            <h2>Try Voice Scheduling</h2>
+            <p>Click on the microphone and start speaking.</p>
+            <div id="mic"></div>
+            <p id="voice-output"></p>
+        </section>
+
+        <!-- Form Section for Manual Input -->
+        <section id="form-input" class="form-section">
+            <h2>Manual Scheduling Input</h2>
+            <form id="schedule-form">
+                <div class="form-group">
+                    <label for="meeting-date">Meeting Date:</label>
+                    <input type="date" id="meeting-date" name="meeting-date">
+                </div>
+                <div class="form-group">
+                    <label for="meeting-time">Meeting Time:</label>
+                    <input type="time" id="meeting-time" name="meeting-time">
+                </div>
+                <div class="form-group">
+                    <label for="meeting-description">Description:</label>
+                    <textarea id="meeting-description" name="meeting-description" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn">Schedule Meeting</button>
+            </form>
+            <div id="confirmationMessage" class="confirmation-message">
+                Your meeting has been scheduled successfully!
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <p>&copy; 2024 AI Scheduling Assistant | All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Voice interaction setup
+        const mic = document.getElementById('mic');
+        const output = document.getElementById('voice-output');
+
+        // Web Speech API - Speech Recognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        recognition.onstart = function() {
+            output.textContent = "Listening...";
+        };
+
+        recognition.onspeechend = function() {
+            recognition.stop();
+            output.textContent = "Processing...";
+        };
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            output.textContent = "You said: " + transcript;
+            processVoiceCommand(transcript);
+        };
+
+        mic.addEventListener('click', function() {
+            recognition.start();
+        });
+
+        // Voice command processing
+        function processVoiceCommand(command) {
+            if (command.toLowerCase().includes('schedule')) {
+                speak("Please fill in the date and time to schedule your meeting.");
+                output.textContent += " - Please fill in the form to complete scheduling.";
+                // You could also pre-fill the form with information extracted from voice command.
+            } else if (command.toLowerCase().includes('reschedule')) {
+                speak("Rescheduling your meeting...");
+                output.textContent += " - Rescheduling your meeting...";
+            } else {
+                speak("Sorry, I didn't understand that.");
+                output.textContent += " - Sorry, I didn't understand that.";
+            }
+        }
+
+        // Web Speech API - Speech Synthesis (Voice Response)
+        function speak(text) {
+            const speech = new SpeechSynthesisUtterance();
+            speech.text = text;
+            speech.volume = 1;
+            speech.rate = 1;
+            speech.pitch = 1;
+            window.speechSynthesis.speak(speech);
+        }
+    </script>
+
+</body>    
+</html>

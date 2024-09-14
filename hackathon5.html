@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced AI Scheduler with Advanced Features</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .schedule {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .day {
+            background-color: white;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            width: 250px;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        .day h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+        .day ul {
+            list-style: none;
+            padding: 0;
+        }
+        .day ul li {
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .day .event {
+            background-color: rgba(0, 123, 255, 0.1);
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .day:hover {
+            transform: scale(1.05);
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        #voice-command-btn {
+            display: block;
+            margin: 20px auto;
+        }
+        /* Chatbot style */
+        .chat-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            height: 400px;
+            overflow-y: auto;
+            margin: 20px auto;
+            padding: 20px;
+            position: relative;
+        }
+        .chat-message {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            text-align: right;
+        }
+        .bot-message {
+            background-color: #f1f1f1;
+            color: #333;
+        }
+        .chat-input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .chat-input:focus {
+            outline: none;
+        }
+        #chatbot-container {
+            position: absolute;
+            bottom: 20px;
+            width: calc(100% - 40px);
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="greeting">AI-Driven Interactive Scheduler</h1>
+        <div class="schedule">
+            <div class="day" id="monday">
+                <h2>Monday</h2>
+                <ul>
+                    <li class="event">9:00 AM - Team Meeting</li>
+                    <li class="event">12:00 PM - Lunch with Client</li>
+                </ul>
+            </div>
+            <div class="day" id="tuesday">
+                <h2>Tuesday</h2>
+                <ul>
+                    <li class="event">10:00 AM - Project Discussion</li>
+                    <li class="event">2:00 PM - Coding Session</li>
+                </ul>
+            </div>
+        </div>
+
+        <button id="voice-command-btn" class="button">Give Voice Command</button>
+
+        <!-- Chatbot UI -->
+        <div class="chat-container">
+            <div id="chat-messages"></div>
+            <div id="chatbot-container">
+                <input type="text" id="chat-input" class="chat-input" placeholder="Ask me to schedule, reschedule, or get info...">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Voice recognition and speech synthesis setup
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        const synth = window.speechSynthesis;
+        const voiceCommandBtn = document.getElementById('voice-command-btn');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const greeting = document.getElementById('greeting');
+        let currentTask = null;
+
+        // Dynamic greeting based on time of day
+        function updateGreeting() {
+            const hours = new Date().getHours();
+            let message = 'Hello!';
+            if (hours < 12) {
+                message = 'Good Morning!';
+            } else if (hours < 18) {
+                message = 'Good Afternoon!';
+            } else {
+                message = 'Good Evening!';
+            }
+            greeting.innerText = message;
+        }
+        updateGreeting();
+
+        recognition.continuous = false;
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        voiceCommandBtn.addEventListener('click', () => {
+            recognition.start();
+            addMessageToChat('Listening...', 'bot');
+            console.log('Voice recognition started...');
+        });
+
+        recognition.onresult = (event) => {
+            const userCommand = event.results[0][0].transcript;
+            console.log('User Command:', userCommand);
+            addMessageToChat(userCommand, 'user');
+            handleVoiceCommand(userCommand);
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Recognition Error:', event.error);
+        };
+
+        function addMessageToChat(message, type) {
+            const chatMessage = document.createElement('div');
+            chatMessage.classList.add('chat-message');
+            chatMessage.classList.add(type === 'user' ? 'user-message' : 'bot-message');
+            chatMessage.innerText = message;
+            chatMessages.appendChild(chatMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Handle voice commands and generate responses
+        function handleVoiceCommand(command) {
+            let responseText = 'Sorry, I didn’t catch that.';
+            
+            if (command.toLowerCase().includes('schedule') && command.toLowerCase().includes('monday')) {
+                responseText = 'You have a team meeting at 9 AM and lunch with a client at 12 PM on Monday. Do you want to reschedule or delete any of these events?';
+                currentTask = 'monday';
+            } else if (command.toLowerCase().includes('reschedule')) {
+                if (currentTask === 'monday') {
+                    responseText = 'Which event on Monday would you like to reschedule?';
+                    // Logic for rescheduling events dynamically
+                }
+            } else if (command.toLowerCase().includes('delete')) {
+                if (currentTask === 'monday') {
+                    responseText = 'Which event on Monday would you like to delete?';
+                }
+            } else if (command.toLowerCase().includes('reminder')) {
+                responseText = 'Reminder set for your event!';
+            } else if (command.toLowerCase().includes('add event')) {
+                responseText = 'What event would you like to add? Please provide time and details.';
+                // Further logic for adding event
+            } else if (command.toLowerCase().includes('daily summary')) {
+                responseText = 'Here is your sched
